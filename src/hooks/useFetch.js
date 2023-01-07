@@ -10,14 +10,16 @@ export const useFetch = (url) => {
 
     const fetchData = async () => {
       setIsPending(true);
+
       try {
         const res = await fetch(url, { signal: controller.signal });
         if (!res.ok) {
           throw new Error(res.statusText);
         }
-        const json = await res.json();
+        const data = await res.json();
+
         setIsPending(false);
-        setData(json);
+        setData(data);
         setError(null);
       } catch (err) {
         if (err.name === "AbortError") {
@@ -25,10 +27,10 @@ export const useFetch = (url) => {
         } else {
           setIsPending(false);
           setError("Could not fetch the data");
-          console.log(err.message);
         }
       }
     };
+
     fetchData();
 
     return () => {
