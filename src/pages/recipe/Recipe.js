@@ -1,5 +1,4 @@
 import "./Recipe.css";
-import { useFetch } from "../../hooks/useFetch";
 import { useParams } from "react-router-dom";
 import { useTheme } from "../../hooks/useContext";
 import { projectFirestore } from "../../firebase/config";
@@ -13,6 +12,12 @@ export default function Recipe() {
   const [recipe, setRecipe] = useState(null);
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState(false);
+
+  const handleClick = () => {
+    projectFirestore.collection("recipes").doc(id).update({
+      title: "Something different",
+    });
+  };
 
   useEffect(() => {
     setIsPending(true);
@@ -45,6 +50,7 @@ export default function Recipe() {
             ))}
           </ul>
           <p className="method">{recipe.method}</p>
+          <button onClick={handleClick}>Update me</button>
         </>
       )}
     </div>
