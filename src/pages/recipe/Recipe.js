@@ -2,14 +2,34 @@ import "./Recipe.css";
 import { useFetch } from "../../hooks/useFetch";
 import { useParams } from "react-router-dom";
 import { useTheme } from "../../hooks/useContext";
+import { projectFirestore } from "../../firebase/config";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export default function Recipe() {
-  const params = useParams();
-  const url = `http://localhost:3000/recipes/${params.id}`;
-  const { data: recipe, isPending, error } = useFetch(url);
+  const { id } = useParams();
   const { mode } = useTheme();
+
+  const [recipe, setRecipe] = useState(null);
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    setIsPending(true);
+    projectFirestore
+      .collection("recipes")
+      .doc(id)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          setIsPending(false);
+          setRecipe(doc.data());
+        } else {
+          setIsPending(false);
+          setError("Could not find recipe");
+        }
+      });
+  }, [id]);
 
   return (
     <div className={`recipe ${mode}`}>
